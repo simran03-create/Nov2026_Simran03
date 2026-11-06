@@ -1,0 +1,67 @@
+- name: Install and Start Apache
+  hosts: all
+  become: yes
+  tasks:  
+ - name: Install apache
+      yum:
+        name: httpd
+        state: present
+    - name: Start apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    
+
+ provider "aws" {
+  region = "us-east-1"
+}
+
+
+resource "aws_instance" "Simran03" {
+  ami           = "ami-021334adshhf9949"
+  instance_type = "t3.medium"
+  tags = {
+    Name = "Simran03-T3"
+  }
+}
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: simran-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simran-app
+  template:
+    metadata:
+      labels:
+        app: simran-app
+    spec:
+      containers:
+        - name: app
+          image: nginx
+          ports:
+            - containerPort: 80
+
+#!/bin/bash
+echo "Current user: $(whoami)"
+echo "Current user groups: $(groups)"
+
+
+# Docker File for Nginx Web Server
+FROM nginx:latest
+COPY index.html /usr/share/nginx/html/index.html
+
+# HTML
+<h1>Hello World</h1>
+
+# Bash
+# Real Path
+/usr/share/nginx/html
+
+# Bash
+docker build -t simran-nginx .
+docker run -d -p 80:80 simran-nginx
